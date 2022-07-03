@@ -23,8 +23,8 @@ Headers
 Body
 ``` json
 {
-    "identity" : "ian@ijpuk.com",
-    "password" : "H!CvLvcttP!P.hAuLo6pD"
+    "identity" : "{your username}",
+    "password" : "{your password}"
 }
 ```
 
