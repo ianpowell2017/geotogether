@@ -1,0 +1,13 @@
+################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+TestResults/
+packages
+*.webtestresult
+**/*.csproj.user
+*.pubxml*
+package-lock.json
+**/obj
+**/bin
