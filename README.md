@@ -10,13 +10,141 @@ Once logged in using the app.  Pair the Geo Trio device with the app.
 
 Base URI : `https://api.geotogether.com/`
 
-POST usersservice/v2/login
+### Login
 
-GET api/userapi/v2/user/detail-systems?systemDetails=true
+POST - `usersservice/v2/login`
 
-GET api/userapi/system/smets2-live-data/
+Headers
+| Key          | Value            |
+|----          |------            |
+| Accept       | application/json |
+| Content-Type | application/json |
 
-GET api/userapi/system/smets2-periodic-data/
+Body
+``` json
+{
+    "identity" : "ian@ijpuk.com",
+    "password" : "H!CvLvcttP!P.hAuLo6pD"
+}
+```
+
+Response
+``` json
+{
+    "username": "",
+    "email": "",
+    "displayName": "",
+    "validated": true,
+    "accessToken": ""
+}
+```
+
+### Retrieve all connected devices
+
+GET - `api/userapi/v2/user/detail-systems?systemDetails=true`
+
+Headers
+| Key           | Value                                   |
+|----           |------                                   |
+| Authorization | Bearer {accessToken from login request} |
+| Content-Type  | application/json                        |
+
+Response
+``` json
+{
+    "systemRoles": [
+        {
+            "name": "",
+            "systemId": "",
+            "roles": [
+                "READ",
+                "WRITE"
+            ]
+        }
+    ],
+    ....
+}
+```
+
+### Retrieve current data from device
+
+GET - `api/userapi/system/smets2-live-data/{systemId from previous request}`
+
+Headers
+| Key           | Value                                   |
+|----           |------                                   |
+| Authorization | Bearer {accessToken from login request} |
+| Content-Type  | application/json                        |
+
+Response
+``` json
+{
+    "latestUtc": 1656839533,
+    "id": "",
+    "power": [
+        {
+            "type": "ELECTRICITY",
+            "watts": -1103,
+            "valueAvailable": true
+        },
+        {
+            "type": "GAS_ENERGY",
+            "watts": 0,
+            "valueAvailable": true
+        }
+    ],
+    "powerTimestamp": 1656839533,
+    "localTime": 1656843133,
+    "localTimeTimestamp": 1656839533,
+    "creditStatus": null,
+    "creditStatusTimestamp": 0,
+    "remainingCredit": null,
+    "remainingCreditTimestamp": 0,
+    "zigbeeStatus": {
+        "electricityClusterStatus": "CONNECTED",
+        "gasClusterStatus": "CONNECTED",
+        "hanStatus": "CONNECTED",
+        "networkRssi": -77
+    },
+    "zigbeeStatusTimestamp": 1656839533,
+    "emergencyCredit": null,
+    "emergencyCreditTimestamp": 0,
+    "systemStatus": [
+        {
+            "component": "DISPLAY",
+            "statusType": "STATUS_OK",
+            "systemErrorCode": "ERROR_CODE_NONE",
+            "systemErrorNumber": 0
+        },
+        {
+            "component": "ZIGBEE",
+            "statusType": "STATUS_OK",
+            "systemErrorCode": "ERROR_CODE_NONE",
+            "systemErrorNumber": 0
+        },
+        {
+            "component": "ELECTRICITY",
+            "statusType": "STATUS_OK",
+            "systemErrorCode": "ERROR_CODE_NONE",
+            "systemErrorNumber": 0
+        },
+        {
+            "component": "GAS",
+            "statusType": "STATUS_OK",
+            "systemErrorCode": "ERROR_CODE_NONE",
+            "systemErrorNumber": 0
+        }
+    ],
+    "systemStatusTimestamp": 1656839533,
+    "temperature": 0.0,
+    "temperatureTimestamp": 0,
+    "ttl": 120
+}
+```
+
+### History data
+
+GET - `api/userapi/system/smets2-periodic-data/`
 
 ## Source code
 

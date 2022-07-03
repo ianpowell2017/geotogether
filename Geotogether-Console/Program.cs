@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Geotogether;
+using Microsoft.Extensions.Configuration;
 
-namespace Geotogether
+namespace Geotogether_Console
 {
     internal class Program
     {
@@ -14,14 +15,14 @@ namespace Geotogether
             var builder = new ConfigurationBuilder()
                                     .AddJsonFile("appsettings.json");
 
-            IConfiguration configuration = builder.Build();
-                        
+            var configuration = builder.Build();
+
             var username = configuration["GeoTogetherAccount:Username"];
             var password = configuration["GeoTogetherAccount:Password"];
 
             _service = new GeoTogetherService();
 
-            await LogIn(username, password).ConfigureAwait(false);
+            await logIn(username, password).ConfigureAwait(false);
 
             while (true)
             {
@@ -32,7 +33,7 @@ namespace Geotogether
                     if (success.HasValue && !success.Value)
                     {
                         // Try logging in again
-                        await LogIn(username, password).ConfigureAwait(false);
+                        await logIn(username, password).ConfigureAwait(false);
                         continue;
                     }
 
@@ -45,7 +46,7 @@ namespace Geotogether
             }
         }
 
-        static Task<bool> LogIn(string username, string password)
+        private static Task<bool> logIn(string username, string password)
         {
             Console.WriteLine("Logging in");
             return _service!.ConnectAsync(username, password);

@@ -54,7 +54,6 @@ namespace Geotogether
             restRequest.AddHeader("Authorization", $"Bearer {_bearerToken}");
             var response = await _client.ExecuteAsync<Data>(restRequest);
 
-
             var retValue = new Dictionary<string, int>();
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -76,6 +75,4 @@ namespace Geotogether
             return (true, retValue, response.Content);
         }
     }
-
-
 }
