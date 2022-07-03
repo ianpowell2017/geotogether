@@ -11,4 +11,4 @@ packages
 package-lock.json
 **/obj
 **/bin
-Geotogether/appsettings.json
+**/appsettings.json
