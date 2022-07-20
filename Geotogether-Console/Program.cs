@@ -21,19 +21,27 @@ namespace Geotogether_Console
             var password = configuration["GeoTogetherAccount:Password"];
 
             _service = new GeoTogetherService();
-
-            await logIn(username, password).ConfigureAwait(false);
+            string token;
+            while (true)
+            {
+                (var _, token) = await logIn(username, password).ConfigureAwait(false);
+                if (string.IsNullOrEmpty(token))
+                    await Task.Delay(5000);
+                else
+                    break;
+            }
 
             while (true)
             {
-                var deviceIds = await _service.GetDevices().ConfigureAwait(false);
+                var deviceIds = await _service.GetDevices(token).ConfigureAwait(false);
                 foreach (var deviceId in deviceIds)
                 {
-                    var (success, data, content) = await _service.GetDeviceData(deviceId).ConfigureAwait(false);
+
+                    var (success, data, content) = await _service.GetDeviceData(token, deviceId).ConfigureAwait(false);
                     if (success.HasValue && !success.Value)
                     {
                         // Try logging in again
-                        await logIn(username, password).ConfigureAwait(false);
+                        (_, token) = await logIn(username, password).ConfigureAwait(false);
                         continue;
                     }
 
@@ -46,10 +54,10 @@ namespace Geotogether_Console
             }
         }
 
-        private static Task<bool> logIn(string username, string password)
+        private static Task<(bool, string)> logIn(string username, string password)
         {
             Console.WriteLine("Logging in");
-            return _service!.ConnectAsync(username, password);
+            return _service.ConnectAsync(username, password);
         }
     }
 }

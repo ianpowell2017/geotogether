@@ -8,29 +8,28 @@ namespace Geotogether
     public class GeoTogetherService
     {
         private readonly RestClient _client;
-        private string? _bearerToken;
 
         public GeoTogetherService()
         {
             _client = new RestClient("https://api.geotogether.com");
         }
 
-        public async Task<bool> ConnectAsync(string username, string password)
+        public async Task<(bool Success, string Token)> ConnectAsync(string username, string password)
         {
             var restRequest = new RestRequest("usersservice/v2/login", Method.Post);
             restRequest.AddJsonBody(new Login { Username = username, Password = password });
             var response = await _client.ExecuteAsync<LoginResponse>(restRequest);
-            _bearerToken = response.Data?.AccessToken;
-            return !string.IsNullOrEmpty(_bearerToken);
+            var token = response.Data?.AccessToken;
+            return (!string.IsNullOrEmpty(token), token);
         }
 
-        public async Task<List<string?>> GetDevices()
+        public async Task<List<string>> GetDevices(string token)
         {
-            if (string.IsNullOrEmpty(_bearerToken))
+            if (string.IsNullOrEmpty(token))
                 throw new Exception("You need to login first");
 
             var restRequest = new RestRequest("api/userapi/v2/user/detail-systems?systemDetails=true", Method.Get);
-            restRequest.AddHeader("Authorization", $"Bearer {_bearerToken}");
+            restRequest.AddHeader("Authorization", $"Bearer {token}");
             var response = await _client.ExecuteAsync<DeviceListResponse>(restRequest);
             if (response.Data == null || response.Data.SystemRoles == null)
                 return new List<string?>();
@@ -38,12 +37,12 @@ namespace Geotogether
             return response.Data.SystemRoles.Select(x => x.SystemId).ToList();
         }
 
-        public async Task<(bool? connected, Dictionary<string, int> data, string? responseContent)> GetDeviceData(string? deviceId)
+        public async Task<(bool? connected, Dictionary<string, int> data, string responseContent)> GetDeviceData(string token, string deviceId)
         {
             if (string.IsNullOrEmpty(deviceId))
                 throw new ArgumentNullException(nameof(deviceId));
 
-            if (string.IsNullOrEmpty(_bearerToken))
+            if (string.IsNullOrEmpty(token))
                 throw new Exception("You need to login first");
 
             if (string.IsNullOrEmpty(deviceId))
@@ -51,7 +50,7 @@ namespace Geotogether
 
             var restRequest = new RestRequest("api/userapi/system/smets2-live-data/{deviceId}", Method.Get);
             restRequest.AddUrlSegment("deviceId", deviceId);
-            restRequest.AddHeader("Authorization", $"Bearer {_bearerToken}");
+            restRequest.AddHeader("Authorization", $"Bearer {token}");
             var response = await _client.ExecuteAsync<Data>(restRequest);
 
             var retValue = new Dictionary<string, int>();
