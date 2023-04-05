@@ -37,6 +37,15 @@ namespace Geotogether
             return response.Data.SystemRoles.Select(x => x.SystemId).ToList();
         }
 
+        public async Task GetAllData(string token, string deviceId)
+        {
+            // 'api/userapi/system/smets2-periodic-data/'
+            var restRequest = new RestRequest("api/userapi/system/smets2-periodic-data/{deviceId}", Method.Get);
+            restRequest.AddUrlSegment("deviceId", deviceId);
+            restRequest.AddHeader("Authorization", $"Bearer {token}");
+            var response = await _client.ExecuteAsync<GetAllDeviceData>(restRequest);
+        }
+
         public async Task<(bool? connected, Dictionary<string, int> data, string responseContent)> GetDeviceData(string token, string deviceId)
         {
             if (string.IsNullOrEmpty(deviceId))

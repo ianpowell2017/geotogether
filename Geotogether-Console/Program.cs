@@ -12,8 +12,7 @@ namespace Geotogether_Console
             Console.WriteLine("Geo Together - Data capture");
 
 
-            var builder = new ConfigurationBuilder()
-                                    .AddJsonFile("appsettings.json");
+            var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
 
             var configuration = builder.Build();
 
@@ -36,6 +35,7 @@ namespace Geotogether_Console
                 var deviceIds = await _service.GetDevices(token).ConfigureAwait(false);
                 foreach (var deviceId in deviceIds)
                 {
+                    await _service.GetAllData(token, deviceId);
 
                     var (success, data, content) = await _service.GetDeviceData(token, deviceId).ConfigureAwait(false);
                     if (success.HasValue && !success.Value)
